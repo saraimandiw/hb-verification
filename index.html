@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HB Verification System 💖</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+height:100vh;
+overflow:hidden;
+background:linear-gradient(135deg,#ff9ec4,#ffcce0,#ffd6f5);
+display:flex;
+justify-content:center;
+align-items:center;
+position:relative;
+}
+
+.container{
+width:92%;
+max-width:420px;
+background:rgba(255,255,255,0.15);
+backdrop-filter:blur(12px);
+border-radius:25px;
+padding:30px 25px;
+text-align:center;
+box-shadow:0 8px 30px rgba(0,0,0,0.15);
+position:relative;
+z-index:2;
+animation:fadeIn 0.8s ease;
+max-height:90vh;
+overflow-y:auto;
+}
+
+h1{
+font-size:2rem;
+color:white;
+margin-bottom:15px;
+}
+
+p{
+color:white;
+font-size:1rem;
+margin-bottom:20px;
+}
+
+.question{
+font-size:1.35rem;
+font-weight:600;
+color:white;
+margin-bottom:30px;
+line-height:1.5;
+}
+
+button{
+border:none;
+padding:14px 20px;
+margin:10px;
+border-radius:15px;
+font-size:1rem;
+font-weight:600;
+cursor:pointer;
+transition:0.25s;
+min-width:120px;
+}
+
+.good{
+background:#ff4d8d;
+color:white;
+box-shadow:0 0 15px rgba(255,77,141,0.5);
+}
+
+.bad{
+background:white;
+color:#444;
+}
+
+.good:hover{
+transform:scale(1.06);
+}
+
+.progress{
+color:white;
+margin-bottom:15px;
+font-size:0.9rem;
+opacity:0.9;
+}
+
+.hidden{
+display:none;
+}
+
+.warning{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+width:85%;
+max-width:350px;
+background:white;
+padding:25px;
+border-radius:20px;
+text-align:center;
+z-index:999;
+box-shadow:0 10px 40px rgba(0,0,0,0.25);
+animation:pop 0.4s ease;
+}
+
+.warning h2{
+margin-bottom:10px;
+color:#ff4d8d;
+}
+
+.warning p{
+color:#555;
+}
+
+input, textarea{
+width:100%;
+padding:14px;
+margin-top:15px;
+border:none;
+border-radius:14px;
+font-size:1rem;
+outline:none;
+}
+
+textarea{
+resize:none;
+height:100px;
+}
+
+.error{
+border:2px solid #ff4d4d !important;
+background:#fff0f0;
+}
+
+#errorMsg{
+margin-top:15px;
+color:white;
+font-size:0.95rem;
+font-weight:600;
+display:none;
+}
+
+.loadingText{
+font-size:1.2rem;
+font-weight:600;
+color:white;
+margin-top:20px;
+}
+
+.bar{
+width:100%;
+height:12px;
+background:rgba(255,255,255,0.3);
+border-radius:30px;
+overflow:hidden;
+margin-top:25px;
+}
+
+.fill{
+height:100%;
+width:0%;
+background:white;
+animation:load 8s linear forwards;
+}
+
+.heart{
+position:absolute;
+font-size:22px;
+animation:floatUp linear infinite;
+opacity:0.8;
+pointer-events:none;
+}
+
+.finalText{
+font-size:1.2rem;
+line-height:1.8;
+color:white;
+}
+
+@keyframes floatUp{
+0%{
+transform:translateY(100vh) scale(0);
+opacity:0;
+}
+50%{
+opacity:1;
+}
+100%{
+transform:translateY(-120vh) scale(1.5);
+opacity:0;
+}
+}
+
+@keyframes fadeIn{
+from{
+opacity:0;
+transform:translateY(20px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+@keyframes pop{
+from{
+opacity:0;
+transform:translate(-50%,-50%) scale(0.5);
+}
+to{
+opacity:1;
+transform:translate(-50%,-50%) scale(1);
+}
+}
+
+@keyframes load{
+0%{
+width:0%;
+}
+100%{
+width:100%;
+}
+}
+
+.shake{
+animation:shake 0.4s;
+}
+
+@keyframes shake{
+0%,100%{transform:translateX(0);}
+25%{transform:translateX(-10px);}
+50%{transform:translateX(10px);}
+75%{transform:translateX(-10px);}
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container" id="loadingScreen">
+
+<h1>HB Verification System 💖</h1>
+
+<div class="loadingText" id="loadingText">
+Initializing...
+</div>
+
+<div class="bar">
+<div class="fill"></div>
+</div>
+
+</div>
+
+<div class="container hidden" id="quizBox">
+
+<div class="progress" id="progress"></div>
+
+<div class="question" id="question"></div>
+
+<div id="buttons"></div>
+
+</div>
+
+<div class="container hidden" id="formBox">
+
+<h1>Final Verification 💖</h1>
+
+<p>Answer honestly baby 😭✨</p>
+
+<input id="comfortFood" placeholder="Favorite comfort food 🍜">
+<input id="chocolate" placeholder="Favorite chocolate/snack 🍫">
+<input id="iceCream" placeholder="Favorite ice cream 🍦">
+<input id="drink" placeholder="Drink you'd never refuse 🧋">
+<input id="flower" placeholder="Favorite flower 🌸">
+<input id="dreamPlace" placeholder="Dream place to visit 🌍">
+<input id="happyThing" placeholder="Something that makes you happy ✨">
+<input id="favoriteHB" placeholder="Favorite thing about Assr 👀">
+<textarea id="chaoticMemory" placeholder="Most chaotic memory with Gemba 😭"></textarea>
+<input id="buyNextTime" placeholder="One thing Gemba should buy next time 👀">
+
+<button class="good" onclick="submitAnswers()">Submit 💖</button>
+
+<p id="errorMsg">
+Please answer all questions baby 😭✨
+</p>
+
+</div>
+
+<div class="container hidden" id="finalBox">
+
+<h1>VERIFICATION COMPLETE ✅</h1>
+
+<div class="finalText">
+
+Thank you for surviving Gemba's friendship verification test 😭💖
+
+<br><br>
+
+You are now officially part of Assr's favorite friendship ever ✨
+
+<br><br>
+
+Love you Gembii 💖
+
+<br><br>
+
+— Your Gemba / Assr
+
+</div>
+
+<br>
+
+<button class="good" onclick="location.reload()">Replay ✨</button>
+
+</div>
+
+<script>
+
+const scriptURL = "https://script.google.com/macros/s/AKfycby1AWoznnw3FppRbfuzQYwQMWLhQiV6A8xxEiQXh7c2rVkTbNNC3gA8NOzgNOU5pW_H/exec";
+
+const loadingTexts = [
+"Initializing HB Verification System...",
+"Scanning friendship memories...",
+"Checking chaos compatibility...",
+"Detecting reel addiction...",
+"Verifying Gemba access...",
+"HG detected 💖"
+];
+
+let lt = 0;
+
+const loadingInterval = setInterval(()=>{
+document.getElementById("loadingText").innerText = loadingTexts[lt];
+lt++;
+
+if(lt >= loadingTexts.length){
+clearInterval(loadingInterval);
+}
+},1300);
+
+setTimeout(()=>{
+document.getElementById("loadingScreen").classList.add("hidden");
+document.getElementById("quizBox").classList.remove("hidden");
+showQuestion();
+},8500);
+
+for(let i=0;i<35;i++){
+
+let heart = document.createElement("div");
+
+heart.classList.add("heart");
+
+heart.innerHTML = ["💖","✨","💗","🌸"][Math.floor(Math.random()*4)];
+
+heart.style.left = Math.random()*100 + "vw";
+heart.style.animationDuration = (Math.random()*5+4)+"s";
+heart.style.fontSize = (Math.random()*20+15)+"px";
+
+document.body.appendChild(heart);
+}
+
+const questions = [
+
+{
+q:"Who sends the most random reels?",
+good:"Assr obviously 😭",
+bad:"Definitely not you",
+type:"move"
+},
+
+{
+q:"Who is more dramatic?",
+good:"Probably both of us 💀",
+bad:"You (Assr) obviously 🙄",
+type:"warning"
+},
+
+{
+q:"Would you survive one week without talking to Assr?",
+good:"No chance 😭",
+bad:"Easy",
+type:"escape"
+},
+
+{
+q:"What are we?",
+good:"Chaotic duo ✨",
+bad:"Normal humans",
+type:"shake"
+},
+
+{
+q:"So… if a cooler HB appears someday…",
+good:"Impossible. Assr is enough 😌",
+bad:"I might upgrade 😭",
+type:"warning2"
+},
+
+{
+q:"Will you stay Assr's favorite person forever? 💖",
+good:"Always ✨",
+bad:"Maybe 👀",
+type:"final"
+}
+
+];
+
+let current = 0;
+let finalMoves = 0;
+
+function showQuestion(){
+
+const q = questions[current];
+
+document.getElementById("progress").innerText = `Question ${current+1}/${questions.length}`;
+
+document.getElementById("question").innerText = q.q;
+
+const buttons = document.getElementById("buttons");
+
+buttons.innerHTML = `
+<button class="good" id="goodBtn">${q.good}</button>
+<button class="bad" id="badBtn">${q.bad}</button>
+`;
+
+document.getElementById("goodBtn").onclick = nextQuestion;
+
+const badBtn = document.getElementById("badBtn");
+
+if(q.type==="move" || q.type==="escape"){
+
+badBtn.addEventListener("touchstart",moveButton);
+badBtn.addEventListener("mouseover",moveButton);
+
+}
+
+if(q.type==="shake"){
+
+badBtn.onclick = ()=>{
+badBtn.classList.add("shake");
+
+setTimeout(()=>{
+badBtn.classList.remove("shake");
+showWarning();
+},500);
+};
+
+}
+
+if(q.type==="warning" || q.type==="warning2"){
+
+badBtn.onclick = showWarning;
+
+}
+
+if(q.type==="final"){
+
+badBtn.onclick = finalMove;
+
+}
+
+}
+
+function moveButton(e){
+
+const btn = e.target;
+
+const x = Math.random() * (window.innerWidth - 140);
+const y = Math.random() * (window.innerHeight - 80);
+
+btn.style.position = "fixed";
+btn.style.left = x + "px";
+btn.style.top = y + "px";
+
+}
+
+function showWarning(){
+
+const warn = document.createElement("div");
+
+warn.className = "warning";
+
+warn.innerHTML = `
+<h2>⚠️ Warning</h2>
+<p>Are you REALLY sure about that answer? 👀</p>
+
+<button class="good" id="backBtn">Wait... no 😭</button>
+<button class="bad" id="sureBtn">Yes I'm sure</button>
+`;
+
+document.body.appendChild(warn);
+
+document.getElementById("backBtn").onclick = ()=>{
+warn.remove();
+};
+
+document.getElementById("sureBtn").onclick = ()=>{
+
+warn.innerHTML = `
+<h2>🚨 Suspicious Answer</h2>
+<p>Rechecking friendship status...</p>
+`;
+
+setTimeout(()=>{
+
+warn.remove();
+
+const buttons = document.getElementById("buttons");
+
+buttons.innerHTML = `
+<button class="good" onclick="nextQuestion()">Okay okay Assr wins 😭</button>
+<button class="good" onclick="nextQuestion()">Fine... Assr is enough 😭</button>
+`;
+
+},1500);
+
+};
+
+}
+
+function finalMove(e){
+
+finalMoves++;
+
+const btn = e.target;
+
+const x = Math.random() * (window.innerWidth - 120);
+const y = Math.random() * (window.innerHeight - 70);
+
+btn.style.position = "fixed";
+btn.style.left = x + "px";
+btn.style.top = y + "px";
+
+btn.style.transform = `scale(${1 - finalMoves*0.12})`;
+
+if(finalMoves >= 5){
+
+btn.remove();
+
+const buttons = document.getElementById("buttons");
+
+const newBtn = document.createElement("button");
+
+newBtn.className = "good";
+
+newBtn.innerText = "Of course 💖";
+
+newBtn.onclick = nextQuestion;
+
+buttons.appendChild(newBtn);
+
+}
+
+}
+
+function nextQuestion(){
+
+current++;
+
+if(current >= questions.length){
+
+document.getElementById("quizBox").classList.add("hidden");
+
+document.getElementById("formBox").classList.remove("hidden");
+
+return;
+}
+
+showQuestion();
+
+}
+
+function submitAnswers(){
+
+const fields = [
+
+document.getElementById("comfortFood"),
+document.getElementById("chocolate"),
+document.getElementById("iceCream"),
+document.getElementById("drink"),
+document.getElementById("flower"),
+document.getElementById("dreamPlace"),
+document.getElementById("happyThing"),
+document.getElementById("favoriteHB"),
+document.getElementById("chaoticMemory"),
+document.getElementById("buyNextTime")
+
+];
+
+let valid = true;
+
+fields.forEach(field=>{
+
+field.classList.remove("error");
+
+if(field.value.trim()===""){
+
+field.classList.add("error");
+
+valid = false;
+
+}
+
+});
+
+if(!valid){
+
+document.getElementById("errorMsg").style.display = "block";
+
+return;
+
+}
+
+document.getElementById("errorMsg").style.display = "none";
+
+const data = {
+
+comfortFood: document.getElementById("comfortFood").value,
+chocolate: document.getElementById("chocolate").value,
+iceCream: document.getElementById("iceCream").value,
+drink: document.getElementById("drink").value,
+flower: document.getElementById("flower").value,
+dreamPlace: document.getElementById("dreamPlace").value,
+happyThing: document.getElementById("happyThing").value,
+favoriteHB: document.getElementById("favoriteHB").value,
+chaoticMemory: document.getElementById("chaoticMemory").value,
+buyNextTime: document.getElementById("buyNextTime").value
+
+};
+
+fetch(scriptURL,{
+
+method:"POST",
+body:JSON.stringify(data)
+
+})
+.then(res=>{
+
+document.getElementById("formBox").classList.add("hidden");
+
+document.getElementById("finalBox").classList.remove("hidden");
+
+})
+.catch(err=>{
+
+alert("Something went wrong 😭");
+
+});
+
+}
+
+</script>
+
+</body>
+</html>
